@@ -1,0 +1,13 @@
+@GenModel(
+    bundleManifest="false",
+    modelDirectory="src/main/java-gen",
+    complianceLevel="17"
+)
+
+package net.gunivers.dispenser.metamodel.slimeball
+
+import net.gunivers.dispenser.metamodel.slimeball.blockModel.BlockModel
+
+class Slimeball {
+    refers BlockModel blockModel
+}

@@ -1,0 +1,100 @@
+@GenModel(
+    bundleManifest="false",
+    modelDirectory="src/main/java-gen",
+    complianceLevel="17"
+)
+
+package net.gunivers.dispenser.metamodel.slimeball.blockModel
+
+class KeyValuePair wraps java.util.Map$Entry {
+    String key
+    String value
+}
+
+class FacePair wraps java.util.Map$Entry {
+    BlockModelElementFaceEnum key
+    contains BlockModelElementFace value
+}
+
+class BlockModel {
+    String _name
+	refers BlockModel parent
+	Boolean ambientOcclusion
+	contains BlockModelTextures textures
+	contains BlockModelDisplayPlace display
+	contains BlockModelElement[1..*] elements
+}
+
+class BlockModelTextures {
+	String[0..1] particle
+	contains KeyValuePair[] variables
+}
+
+class BlockModelDisplayPlace {
+	Float[3] rotation
+	Float[3] translation
+	Float[3] scale
+	DisplayPosition position
+}
+
+enum DisplayPosition {
+	thirdperson_righthand
+	thirdperson_lefthand
+	firstperson_righthand
+	firstperson_lefthand
+	gui
+	head
+	ground
+	fixed
+}
+
+class BlockModelElement {
+	Float[3] from
+	Float[3] to
+	Boolean shade
+	contains BlockModelElementRotation rotation
+	contains FacePair[1..*] faces
+}
+
+class BlockModelElementRotation {
+	Float[3] origin
+	Float angle
+	Boolean rescale
+	Axis axis
+}
+
+enum Axis {
+	x
+	y
+	z
+}
+
+class BlockModelElementFace {
+	Float[3] uv
+	String texture
+	Integer rotation
+	Integer tintIndex
+	BlockModelElementCullface cullface
+}
+
+enum BlockModelElementCullface {
+	down
+	up
+	north
+	south
+	west
+	east
+	bottom
+}
+
+enum BlockModelElementFaceEnum {
+	down
+	up
+	north
+	south
+	west
+	east
+}
+
+
+

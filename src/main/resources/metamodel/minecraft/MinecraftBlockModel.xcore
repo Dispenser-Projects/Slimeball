@@ -1,0 +1,95 @@
+@GenModel(
+    bundleManifest="false",
+    modelDirectory="src/main/java-gen",
+    complianceLevel="17"
+)
+
+package net.gunivers.dispenser.metamodel.minecraft.blockModel
+
+class KeyValuePair wraps java.util.Map$Entry {
+    String key
+    String value
+}
+
+class FacePair wraps java.util.Map$Entry {
+    BlockModelElementFaceEnum key
+    contains BlockModelElementFace value
+}
+
+class BlockModel {
+    String _name
+	String parent
+	Boolean ambientocclusion = "true"
+	contains KeyValuePair[] textures
+	contains BlockModelDisplayPlace display
+	contains BlockModelElement[1..*] elements
+}
+
+class BlockModelDisplayPlace {
+	Float[3] rotation
+	Float[3] translation
+	Float[3] scale
+	DisplayPosition position
+}
+
+enum DisplayPosition {
+	thirdperson_righthand
+	thirdperson_lefthand
+	firstperson_righthand
+	firstperson_lefthand
+	gui
+	head
+	ground
+	fixed
+}
+
+class BlockModelElement {
+	Float[3] from
+	Float[3] to
+	Boolean shade = "true"
+	contains BlockModelElementRotation rotation
+	contains FacePair[1..*] faces
+}
+
+class BlockModelElementRotation {
+	Float[3] origin
+	Float angle
+	Boolean rescale = "false"
+	Axis axis
+}
+
+enum Axis {
+	x
+	y
+	z
+}
+
+class BlockModelElementFace {
+	Float[3] uv
+	String texture
+	Integer rotation = "0"
+	Integer tintindex = "-1"
+	BlockModelElementCullface cullface
+}
+
+enum BlockModelElementCullface {
+	down
+	up
+	north
+	south
+	west
+	east
+	bottom
+}
+
+enum BlockModelElementFaceEnum {
+	down
+	up
+	north
+	south
+	west
+	east
+}
+
+
+

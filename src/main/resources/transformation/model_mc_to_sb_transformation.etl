@@ -1,0 +1,113 @@
+rule ModelConversion
+    transform mcBlockModel : Minecraft!BlockModel
+    to        sbBlockModel : Slimeball!BlockModel {
+
+    sbBlockModel._name            = mcBlockModel._name;
+    sbBlockModel.ambientOcclusion = mcBlockModel.ambientocclusion;
+    sbBlockModel.display          ::= mcBlockModel.display;
+    sbBlockModel.elements         ::= mcBlockModel.elements;
+
+    var textures : new Slimeball!BlockModelTextures;
+    textures.particle  = mcBlockModel.textures.get("particle");
+    for(pair : Minecraft!KeyValuePair in mcBlockModel.textures)
+        if(pair.getKey() <> "particle") {
+            var sbPair : new Slimeball!KeyValuePair;
+            sbPair.setTypedKey(pair.getKey());
+            sbPair.setTypedValue(pair.getValue());
+            textures.variables.add(sbPair);
+        }
+    sbBlockModel.textures = textures;
+}
+
+rule DisplayPlaceConversion
+    transform mcDisplayPlace : Minecraft!BlockModelDisplayPlace
+    to        sbDisplayPlace : Slimeball!BlockModelDisplayPlace {
+
+    sbDisplayPlace.rotation    = mcDisplayPlace.rotation;
+    sbDisplayPlace.translation = mcDisplayPlace.translation;
+    sbDisplayPlace.scale       = mcDisplayPlace.scale;
+
+    sbDisplayPlace.position    = mcDisplayPlace.position.convertDisplayPosition();
+ }
+
+rule ElementConversion
+    transform mcElement : Minecraft!BlockModelElement
+    to        sbElement : Slimeball!BlockModelElement {
+
+    sbElement.from     = mcElement.from;
+    sbElement.`to`     = mcElement.`to`;
+    sbElement.shade    = mcElement.shade;
+
+    sbElement.rotation ::= mcElement.rotation;
+    for(pair in mcElement.faces) {
+        var key                                     = pair.getKey().convertBlockModelElementFaceEnum();
+        var value : Slimeball!BlockModelElementFace ::= pair.getValue();
+        sbElement.faces.put(key, value);
+    }
+}
+
+rule ElementRotationConversion
+    transform mcRotation : Minecraft!BlockModelElementRotation
+    to        sbRotation : Slimeball!BlockModelElementRotation {
+
+    sbRotation.origin  = mcRotation.origin;
+    sbRotation.angle   = mcRotation.angle;
+    sbRotation.rescale = mcRotation.rescale;
+
+    sbRotation.axis    = mcRotation.axis.convertDisplayPosition();
+}
+
+rule ElementFaceConversion
+    transform mcFace : Minecraft!BlockModelElementFace
+    to        sbFace : Slimeball!BlockModelElementFace {
+
+    sbFace.uv        = mcFace.uv;
+    sbFace.texture   = mcFace.texture;
+    sbFace.rotation  = mcFace.rotation;
+    sbFace.tintIndex = mcFace.tintindex;
+
+    sbFace.cullface  = mcFace.cullface.convertBlockModelElementCullface();
+}
+
+ operation Any convertDisplayPosition() {
+   if (self == Minecraft!DisplayPosition#thirdperson_righthand) return Slimeball!DisplayPosition#thirdperson_righthand;
+   if (self == Minecraft!DisplayPosition#thirdperson_lefthand)  return Slimeball!DisplayPosition#thirdperson_lefthand;
+   if (self == Minecraft!DisplayPosition#firstperson_lefthand)  return Slimeball!DisplayPosition#firstperson_lefthand;
+   if (self == Minecraft!DisplayPosition#firstperson_righthand) return Slimeball!DisplayPosition#firstperson_righthand;
+   if (self == Minecraft!DisplayPosition#gui)                   return Slimeball!DisplayPosition#gui;
+   if (self == Minecraft!DisplayPosition#head)                  return Slimeball!DisplayPosition#head;
+   if (self == Minecraft!DisplayPosition#ground)                return Slimeball!DisplayPosition#ground;
+   if (self == Minecraft!DisplayPosition#fixed)                 return Slimeball!DisplayPosition#fixed;
+}
+
+  operation Any convertAxis() {
+    if (self == Minecraft!Axis#x) return Slimeball!Axis#x;
+    if (self == Minecraft!Axis#y) return Slimeball!Axis#y;
+    if (self == Minecraft!Axis#z) return Slimeball!Axis#z;
+}
+
+operation Any convertBlockModelElementCullface() {
+   if (self == Minecraft!BlockModelElementCullface#down)   return Slimeball!BlockModelElementCullface#down;
+   if (self == Minecraft!BlockModelElementCullface#up)     return Slimeball!BlockModelElementCullface#up;
+   if (self == Minecraft!BlockModelElementCullface#north)  return Slimeball!BlockModelElementCullface#north;
+   if (self == Minecraft!BlockModelElementCullface#south)  return Slimeball!BlockModelElementCullface#south;
+   if (self == Minecraft!BlockModelElementCullface#west)   return Slimeball!BlockModelElementCullface#west;
+   if (self == Minecraft!BlockModelElementCullface#east)   return Slimeball!BlockModelElementCullface#east;
+   if (self == Minecraft!BlockModelElementCullface#bottom) return Slimeball!BlockModelElementCullface#bottom;
+}
+
+operation Any convertBlockModelElementFaceEnum() {
+   if (self == Minecraft!BlockModelElementFaceEnum#down)   return Slimeball!BlockModelElementFaceEnum#down;
+   if (self == Minecraft!BlockModelElementFaceEnum#up)     return Slimeball!BlockModelElementFaceEnum#up;
+   if (self == Minecraft!BlockModelElementFaceEnum#north)  return Slimeball!BlockModelElementFaceEnum#north;
+   if (self == Minecraft!BlockModelElementFaceEnum#south)  return Slimeball!BlockModelElementFaceEnum#south;
+   if (self == Minecraft!BlockModelElementFaceEnum#west)   return Slimeball!BlockModelElementFaceEnum#west;
+   if (self == Minecraft!BlockModelElementFaceEnum#east)   return Slimeball!BlockModelElementFaceEnum#east;
+}
+
+post {
+    for (mc in Minecraft!BlockModel.all) {
+        mc.equivalent().parent =
+            Slimeball!BlockModel.all.selectOne(sb | 'minecraft:block/' + sb._name = mc.parent);
+    }
+}

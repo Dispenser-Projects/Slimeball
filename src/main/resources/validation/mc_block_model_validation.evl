@@ -1,0 +1,36 @@
+context BlockModelDisplayPlace {
+
+    constraint TranslationBounds {
+        check  : self.translation.forAll(coordinate | coordinate >= -80 and coordinate <= 80)
+        message: "All values of 'translation' must be between -80 (included) and 80 (included). Found '" + self.translation.reject(coordinate | coordinate >= -80 and coordinate <= 80).concat(", ") + "'."
+    }
+}
+
+context BlockModelElement {
+
+    constraint FromBounds {
+        check  : self.from.forAll(coordinate | coordinate >= -16 and coordinate <= 32)
+        message: "All values of 'from' must be between -16 (included) and 32 (included). Found '" + self.from.reject(coordinate | coordinate >= -16 and coordinate <= 32).concat(", ") + "'."
+    }
+
+    constraint toBounds {
+            check  : self.to.forAll(coordinate | coordinate >= -16 and coordinate <= 32)
+            message: "All values of 'to' must be between -16 (included) and 32 (included). Found '" + self.to.reject(coordinate | coordinate >= -16 and coordinate <= 32).concat(", ") + "'."
+        }
+}
+
+context BlockModelElementRotation {
+
+    constraint AngleBounds {
+        check  : self.angle >= -45 and self.angle <= 45 and (self.angle / 22.5).ceiling() = (self.angle / 22.5).floor()
+        message: "'angle' must be between -45 (included) and 45 (included) and must be a multiple of 22.5. Found '" + self.angle + "'."
+    }
+}
+
+context BlockModelElementFace {
+
+    constraint RotationBounds {
+        check  : self.rotation >= 0 and self.rotation <= 270 and self.rotation.mod(90) = 0
+        message: "'rotation' must be between 0 (included) and 270 (included) and must be a multiple of 90. Found '" + self.rotation + "'."
+    }
+}

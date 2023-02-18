@@ -1,0 +1,13 @@
+@GenModel(
+    bundleManifest="false",
+    modelDirectory="src/main/java-gen",
+    complianceLevel="17"
+)
+
+package net.gunivers.dispenser.metamodel.minecraft
+
+import net.gunivers.dispenser.metamodel.minecraft.blockModel.BlockModel
+
+class Minecraft {
+    refers BlockModel blockModel
+}
